@@ -30,7 +30,7 @@ type Props = {
 };
 function TopBar({ pet }: Props) {
   return (
-    <div className="flex items-center bg-white px-8 py-5 border-b border-black/[0.08]">
+    <div className="flex items-center bg-white px-8 py-5 border-b border-light">
       <Image
         src={pet?.imageUrl}
         alt=""
@@ -61,7 +61,7 @@ function OtherInfo({ pet }: Props) {
 }
 function Notes({ pet }: Props) {
   return (
-    <section className="flex-1 bg-white px-7 py-5 rounded-md mb-9 mx-8 border border-black/[0.08]">
+    <section className="flex-1 bg-white px-7 py-5 rounded-md mb-9 mx-8 border border-light">
       {pet?.notes}
     </section>
   );
