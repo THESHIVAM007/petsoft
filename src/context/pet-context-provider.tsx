@@ -8,7 +8,8 @@ type TPetContext = {
   handleChangeSelectedPetId: (id: string) => void;
   selectedPet: Pet | undefined;
   numberOfPets: number;
-  handleCheckoutPet:(id:string)=>void
+  handleCheckoutPet: (id: string) => void;
+  handleAddPet: (newPet: Omit<Pet, "id">) => void;
 };
 
 export const PetContext = createContext<TPetContext | null>(null);
@@ -16,13 +17,11 @@ export const PetContext = createContext<TPetContext | null>(null);
 type PetContextProviderProps = {
   data: Pet[];
   children: React.ReactNode;
-
 };
 
 export default function PetContextProvider({
   data,
   children,
-  
 }: PetContextProviderProps) {
   const [pets, setPets] = useState(data);
   const [selectedPetId, setSelectedPetId] = useState<string | null>(null);
@@ -30,16 +29,30 @@ export default function PetContextProvider({
   //derived states
   const selectedPet = pets.find((pet) => pet.id === selectedPetId);
   const numberOfPets = pets.length;
-
-const handleCheckoutPet=(id:string)=>{
-
-  setPets(prev => prev.filter((pet) => pet.id !== id));
-  setSelectedPetId(null);
-}
+  const handleAddPet = (newPet: Omit<Pet, "id">) => {
+    setPets((prev) => [
+      ...prev,
+      { ...newPet, id: Date.now().toString() },
+    ]);
+  };
+  const handleCheckoutPet = (id: string) => {
+    setPets((prev) => prev.filter((pet) => pet.id !== id));
+    setSelectedPetId(null);
+  };
 
   const handleChangeSelectedPetId = (id: string) => setSelectedPetId(id);
   return (
-    <PetContext.Provider value={{ pets, selectedPetId, handleChangeSelectedPetId, selectedPet, numberOfPets, handleCheckoutPet }}>
+    <PetContext.Provider
+      value={{
+        pets,
+        selectedPetId,
+        handleChangeSelectedPetId,
+        selectedPet,
+        numberOfPets,
+        handleCheckoutPet,
+        handleAddPet,
+      }}
+    >
       {children}
     </PetContext.Provider>
   );
