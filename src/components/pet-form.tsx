@@ -3,9 +3,7 @@ import { Label } from "./ui/label";
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
 import { usePetContext } from "@/lib/hooks";
-import { addPet, editPet } from "@/actions/actions";
 import PetFormBtn from "./pet-form-btn";
-import { toast } from "sonner";
 
 interface PetFormProps {
   actionType: "edit" | "add";
@@ -21,20 +19,21 @@ export default function PetForm({
   return (
     <form
       action={async (formData) => {
-        onFormSubmission(); 
+        onFormSubmission();
         const petData = {
           name: formData.get("name") as string,
           ownerName: formData.get("ownerName") as string,
-          imageUrl: (formData.get("imageUrl") as string)|| "https://bytegrad.com/course-assets/react-nextjs/pet-placeholder.png",
+          imageUrl:
+            (formData.get("imageUrl") as string) ||
+            "https://bytegrad.com/course-assets/react-nextjs/pet-placeholder.png",
           age: parseInt(formData.get("age") as string),
           notes: formData.get("notes") as string,
-        }
+        };
         if (actionType === "edit") {
           handleEditPet(selectedPet?.id!, petData);
         } else if (actionType === "add") {
           handleAddPet(petData);
         }
-  
       }}
       className="flex flex-col"
     >
