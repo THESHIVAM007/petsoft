@@ -5,33 +5,14 @@ import { Textarea } from "./ui/textarea";
 import { usePetContext } from "@/lib/hooks";
 import PetFormBtn from "./pet-form-btn";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { petFormSchema, TPetForm } from "@/lib/validation";
 
 type PetFormProps = {
   actionType: "edit" | "add";
   onFormSubmission: () => void;
 };
 
-const petFormSchema = z.object({
-  name: z.string().trim().min(1, { message: "Name is required" }).max(100),
-  ownerName: z
-    .string()
-    .trim()
-    .min(1, { message: "Owner Name is required" })
-    .max(100),
-  imageUrl: z.union([
-    z.literal(""),
-    z.string().trim().url({ message: "Image Url is invalid" }),
-  ]),
-  age: z.coerce
-    .number()
-    .int()
-    .positive()
-    .max(999, { message: "Age must be a positive number" }),
-  notes: z.union([z.literal(""), z.string().trim().max(500)]),
-});
-type TPetForm = z.infer<typeof petFormSchema>;
 export default function PetForm({
   actionType,
   onFormSubmission,
@@ -41,25 +22,28 @@ export default function PetForm({
   const {
     register,
     trigger,
+    getValues,
     formState: { errors },
   } = useForm<TPetForm>({
     resolver: zodResolver(petFormSchema),
+    defaultValues: {
+      name: selectedPet?.name,
+      ownerName: selectedPet?.ownerName,
+      imageUrl: selectedPet?.imageUrl,
+      age: selectedPet?.age,
+      notes: selectedPet?.notes,
+    },
   });
   return (
     <form
-      action={async (formData) => {
+      action={async () => {
         const result = await trigger();
         if (!result) return;
         onFormSubmission();
-        const petData = {
-          name: formData.get("name") as string,
-          ownerName: formData.get("ownerName") as string,
-          imageUrl:
-            (formData.get("imageUrl") as string) ||
-            "https://bytegrad.com/course-assets/react-nextjs/pet-placeholder.png",
-          age: parseInt(formData.get("age") as string),
-          notes: formData.get("notes") as string,
-        };
+        const petData = getValues();
+        petData.imageUrl =
+          petData.imageUrl ||
+          "https://bytegrad.com/course-assets/react-nextjs/pet-placeholder.png";
         if (actionType === "edit") {
           handleEditPet(selectedPet?.id!, petData);
         } else if (actionType === "add") {
