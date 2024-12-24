@@ -8,7 +8,7 @@ export default async function Page() {
   return (
     <main>
       <H1 className="my-8 text-white">Your Account</H1>
-      <ContentBlock className="h-[500PX] flex justify-center items-center ">
+      <ContentBlock className="min-h-[500PX] flex  flex-col justify-center items-center ">
         <p>Logged in as {session?.user.email}</p>
 
         <SignOutBtn />
