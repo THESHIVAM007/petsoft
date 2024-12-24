@@ -3,6 +3,8 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import prisma from "./db";
 import bcrypt from "bcryptjs";
 
+import { getUserByEmail } from "./server-utils";
+
 const config = {
   pages: {
     signIn: "/login",
@@ -12,11 +14,7 @@ const config = {
       async authorize(credentials) {
         const { email, password } = credentials;
 
-        const user = await prisma.user.findUnique({
-          where: {
-            email,
-          },
-        });
+        const user = getUserByEmail(email);
         if (!user) {
           console.log("User not found");
           return null;
