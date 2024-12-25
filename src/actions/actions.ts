@@ -9,10 +9,10 @@ import { checkAuth, getPetById } from "@/lib/server-utils";
 import { redirect } from "next/navigation";
 import { Prisma } from "@prisma/client";
 import { AuthError } from "next-auth";
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 //User Actions
 export async function logIn(prevState: unknown, formData: unknown) {
-  await sleep(1000);
   if (!(formData instanceof FormData)) {
     return {
       message: "Invalid form data",
@@ -34,13 +34,10 @@ export async function logIn(prevState: unknown, formData: unknown) {
 }
 
 export async function logOut() {
-  await sleep(1000);
-
   await signOut({ redirectTo: "/" });
 }
 
 export async function signUp(prevState: unknown, formData: unknown) {
-  await sleep(1000);
   //check if formData is a FormData type
   if (!(formData instanceof FormData)) {
     return {
@@ -85,8 +82,6 @@ export async function signUp(prevState: unknown, formData: unknown) {
 
 //Pet Actions
 export async function addPet(pet: unknown) {
-  await sleep(1000);
-
   const session = await checkAuth();
   const validatedPet = petFormSchema.safeParse(pet);
   if (!validatedPet.success) {
@@ -112,7 +107,6 @@ export async function addPet(pet: unknown) {
 }
 
 export async function editPet(petId: unknown, newPetData: unknown) {
-  await sleep(1000);
   //authentication check
   const session = await checkAuth();
   //validation
@@ -150,8 +144,6 @@ export async function editPet(petId: unknown, newPetData: unknown) {
 }
 
 export async function deletePet(petId: unknown) {
-  await sleep(1000);
-
   //   authentication check
   const session = await checkAuth();
 
@@ -185,4 +177,23 @@ export async function deletePet(petId: unknown) {
     };
   }
   revalidatePath("/app", "layout");
+}
+
+//payment-actions
+
+export async function createCheckoutSession() {
+  const session = await checkAuth();
+  const checkoutSession = await stripe.checkout.sessions.create({
+    customer_email: session.user.email,
+    line_items: [
+      {
+        price: "price_1QZp9hCpiX6QSql1nbgbyk2q",
+        quantity: 1,
+      },
+    ],
+    mode: "payment",
+    success_url: `${process.env.CANONICAL_URL}/payment?success=true`,
+    cancel_url: `${process.env.CANONICAL_URL}/payment?canceled=true`,
+  });
+  redirect(checkoutSession.url);
 }
