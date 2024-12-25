@@ -29,13 +29,13 @@ export async function logIn(prevState: unknown, formData: unknown) {
           return { message: "Something went wrong" };
       }
     }
-    return { message: "Something went wrong" };
-    redirect("/app/dashboard");
-    // console.log("Logging in with", authData);
+    throw error; //next js redirects throws error, so we need to rethrow it
   }
 }
 
 export async function logOut() {
+  await sleep(1000);
+
   await signOut({ redirectTo: "/" });
 }
 
