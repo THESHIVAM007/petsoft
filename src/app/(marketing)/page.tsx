@@ -19,7 +19,7 @@ export default function Home() {
           ease
         </h1>
         <p className="text-2xl font-medium max-w-[600px]">
-          Use PetSoft to easily manage your pet care. Get lifetime access for
+          Use PetSoft to easily manage your pets care. Get lifetime access for
           $299
         </p>
         <div className="mt-10 space-x-3">
